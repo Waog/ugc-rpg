@@ -21,20 +21,20 @@ declare module GameBp {
     }
 }
 declare module GameBp {
-    class Credits extends Phaser.State {
-        public bg: Phaser.Sprite;
-        public preload(): void;
-        public create(): void;
-        public onBack(): void;
-        public shutdown(): void;
-    }
-}
-declare module GameBp {
     class Lose extends Phaser.State {
         public bg: Phaser.Sprite;
         public preload(): void;
         public create(): void;
         public onInteraction(): void;
+        public shutdown(): void;
+    }
+}
+declare module GameBp {
+    class Credits extends Phaser.State {
+        public bg: Phaser.Sprite;
+        public preload(): void;
+        public create(): void;
+        public onBack(): void;
         public shutdown(): void;
     }
 }

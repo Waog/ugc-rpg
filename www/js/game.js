@@ -103,6 +103,44 @@ var GameBp;
 })(GameBp || (GameBp = {}));
 var GameBp;
 (function (GameBp) {
+    var Lose = (function (_super) {
+        __extends(Lose, _super);
+        function Lose() {
+            _super.apply(this, arguments);
+        }
+        Lose.prototype.preload = function () {
+            this.load.image('loseBg', 'assets/placeholder/img/squareGradientTopDownRed.png');
+            //            this.game.loseSceneMusic.play();
+        };
+
+        Lose.prototype.create = function () {
+            this.bg = this.add.sprite(0, 0, "loseBg");
+            this.bg.width = this.game.world.width;
+            this.bg.height = this.game.world.height;
+            this.bg.inputEnabled = true;
+            this.bg.events.onInputDown.add(this.onInteraction, this);
+
+            var text = this.game.add.bitmapText(0, 0, 'bmFont', 'Game\nOver!', 80);
+            text.align = 'center';
+            text.x = this.game.world.centerX - text.width / 2;
+            text.y = this.game.world.centerY - text.height / 2;
+        };
+
+        Lose.prototype.onInteraction = function () {
+            //            this.game.clickSound.play();
+            this.game.state.start('MainMenu');
+        };
+
+        Lose.prototype.shutdown = function () {
+            //            this.game.loseSceneMusic.stop();
+        };
+        return Lose;
+    })(Phaser.State);
+    GameBp.Lose = Lose;
+    ;
+})(GameBp || (GameBp = {}));
+var GameBp;
+(function (GameBp) {
     var creditsString = "Game by Waog and Community\n" + "Check out\n" + "https://github.com/Waog/phaser-bp\n" + "Tileset by Hyptosis:\n" + "http://hyptosis.newgrounds.com/";
 
     var Credits = (function (_super) {
@@ -141,44 +179,6 @@ var GameBp;
         return Credits;
     })(Phaser.State);
     GameBp.Credits = Credits;
-    ;
-})(GameBp || (GameBp = {}));
-var GameBp;
-(function (GameBp) {
-    var Lose = (function (_super) {
-        __extends(Lose, _super);
-        function Lose() {
-            _super.apply(this, arguments);
-        }
-        Lose.prototype.preload = function () {
-            this.load.image('loseBg', 'assets/placeholder/img/squareGradientTopDownRed.png');
-            //            this.game.loseSceneMusic.play();
-        };
-
-        Lose.prototype.create = function () {
-            this.bg = this.add.sprite(0, 0, "loseBg");
-            this.bg.width = this.game.world.width;
-            this.bg.height = this.game.world.height;
-            this.bg.inputEnabled = true;
-            this.bg.events.onInputDown.add(this.onInteraction, this);
-
-            var text = this.game.add.bitmapText(0, 0, 'bmFont', 'Game\nOver!', 80);
-            text.align = 'center';
-            text.x = this.game.world.centerX - text.width / 2;
-            text.y = this.game.world.centerY - text.height / 2;
-        };
-
-        Lose.prototype.onInteraction = function () {
-            //            this.game.clickSound.play();
-            this.game.state.start('MainMenu');
-        };
-
-        Lose.prototype.shutdown = function () {
-            //            this.game.loseSceneMusic.stop();
-        };
-        return Lose;
-    })(Phaser.State);
-    GameBp.Lose = Lose;
     ;
 })(GameBp || (GameBp = {}));
 var GameBp;
@@ -284,7 +284,9 @@ var GameBp;
             _super.apply(this, arguments);
         }
         GameScene.prototype.preload = function () {
-            this.load.image('gameBg', 'assets/placeholder/img/squareBlue.png');
+            this.load.tilemap('map', 'assets/tilemaps/test-ground-5x5.json', null, Phaser.Tilemap.TILED_JSON);
+            this.load.image('tileset', 'assets/tilesets/hyptosis.png');
+
             this.load.image('enemy', 'assets/placeholder/img/headBlack.png');
             this.load.image('friend', 'assets/placeholder/img/headWhite.png');
             this.load.audio('hit', Utils.getAudioFileArray('assets/placeholder/fx/hit'));
@@ -298,9 +300,10 @@ var GameBp;
             //            this.music.play();
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-            this.background = this.add.sprite(0, 0, 'gameBg');
-            this.background.width = this.game.world.width;
-            this.background.height = this.game.world.height;
+            var map = this.add.tilemap('map');
+            map.addTilesetImage('hyptosis', 'tileset');
+            var layer = map.createLayer('ground');
+            layer.resizeWorld();
 
             var tutorialString = "shoot the black guy,\ndon't shot the white guy.";
             this.game.add.bitmapText(10, 10, 'bmFont', tutorialString, 50);

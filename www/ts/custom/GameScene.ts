@@ -8,28 +8,31 @@ module GameBp {
 
         preload() {
 
-            this.load.image('gameBg', 'assets/placeholder/img/squareBlue.png');
+            this.load.tilemap('map', 'assets/tilemaps/test-ground-5x5.json', null, Phaser.Tilemap.TILED_JSON);
+            this.load.image('tileset', 'assets/tilesets/hyptosis.png');
+
             this.load.image('enemy', 'assets/placeholder/img/headBlack.png');
             this.load.image('friend', 'assets/placeholder/img/headWhite.png');
             this.load.audio('hit', Utils
                 .getAudioFileArray('assets/placeholder/fx/hit'));
 
 
-//            this.game.gameplayMusic.play();
+            //            this.game.gameplayMusic.play();
         }
 
 
         create() {
             this.hitSound = this.game.add.audio('hit');
 
-//            this.music = this.add.audio('music', 1, false);
-//            this.music.play();
+            //            this.music = this.add.audio('music', 1, false);
+            //            this.music.play();
 
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-            this.background = this.add.sprite(0, 0, 'gameBg');
-            this.background.width = this.game.world.width;
-            this.background.height = this.game.world.height;
+            var map: Phaser.Tilemap = this.add.tilemap('map');
+            map.addTilesetImage('hyptosis', 'tileset');
+            var layer: Phaser.TilemapLayer = map.createLayer('ground');
+            layer.resizeWorld();
 
             var tutorialString = "shoot the black guy,\ndon't shot the white guy.";
             this.game.add.bitmapText(10, 10, 'bmFont', tutorialString, 50);
@@ -44,7 +47,7 @@ module GameBp {
         }
 
 
-        addPhysicsMovmentAndColision(sprite:Phaser.Sprite) {
+        addPhysicsMovmentAndColision(sprite: Phaser.Sprite) {
 
             this.game.physics.arcade.enable(sprite);
             sprite.body.velocity.x = 50 + Math.random() * 50;
@@ -55,7 +58,7 @@ module GameBp {
         }
 
 
-        addInputHandler(sprite:Phaser.Sprite, callback:Function) {
+        addInputHandler(sprite: Phaser.Sprite, callback: Function) {
 
             sprite.inputEnabled = true;
             sprite.events.onInputDown.add(callback, this);
@@ -63,21 +66,21 @@ module GameBp {
 
 
         onWin() {
-        
+
             this.hitSound.play();
             this.game.state.start('Win');
         }
 
-        
+
         onLose() {
-        
+
             this.hitSound.play();
             this.game.state.start('Lose');
         }
 
 
         shutdown() {
-//            this.game.gameplayMusic.stop();
+            //            this.game.gameplayMusic.stop();
         }
 
     }
