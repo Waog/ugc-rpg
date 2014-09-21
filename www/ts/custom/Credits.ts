@@ -1,9 +1,9 @@
 module GameBp {
-    var creditsString = "We thank anyone.\n\n"
-        + "This game is based on\n"
-        + "*phaser boiler plate code*.\n"
+    var creditsString = "Game by Waog and Community\n"
         + "Check out\n"
-        + "https://github.com/Waog/phaser-bp"
+        + "https://github.com/Waog/phaser-bp\n"
+        + "Tileset by Hyptosis:\n"
+        + "http://hyptosis.newgrounds.com/"
 
 
     export class Credits extends Phaser.State {
