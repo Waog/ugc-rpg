@@ -50,11 +50,14 @@ declare module GameBp {
         private enemy;
         private onWin;
         private onWinContext;
+        private onLose;
+        private onLoseContext;
         public weapon: Phaser.Sprite;
         public angle: number;
         static preload(scene: Phaser.State): void;
-        constructor(game: Phaser.Game, enemy: Phaser.Sprite, onWin: Function, onWinContext: any);
+        constructor(game: Phaser.Game, enemy: Phaser.Sprite, onWin: Function, onWinContext: any, onLose: Function, onLoseContext: any);
         public update(): void;
+        public die(): void;
     }
 }
 declare module GameBp {
@@ -83,12 +86,10 @@ declare module GameBp {
         public music: Phaser.Sound;
         public hitSound: Phaser.Sound;
         public player: Player;
-        public enemy: Phaser.Sprite;
+        public enemy: Enemy;
         public preload(): void;
         public create(): void;
         public update(): void;
-        public addDefaultBody(sprite: Phaser.Sprite): void;
-        public addInputHandler(sprite: Phaser.Sprite, callback: Function): void;
         public onWin(): void;
         public onLose(): void;
         public shutdown(): void;
@@ -107,4 +108,12 @@ declare module GameBp {
 declare module Utils {
     function createButton(callbackContext: any, game: Phaser.Game, textString: string, callback: Function, x: number, y: number): void;
     function getAudioFileArray(fileNameWithoutExtention: string): string[];
+}
+declare module GameBp {
+    class Enemy extends GameObject {
+        private player;
+        static preload(scene: Phaser.State): void;
+        constructor(game: Phaser.Game, player: Player);
+        public update(): void;
+    }
 }

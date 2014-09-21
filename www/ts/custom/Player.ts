@@ -12,7 +12,9 @@ module GameBp {
         }
 
 
-        constructor(game: Phaser.Game, private enemy: Phaser.Sprite, private onWin: Function, private onWinContext: any) {
+        constructor(game: Phaser.Game, private enemy: Phaser.Sprite,
+            private onWin: Function, private onWinContext: any,
+            private onLose: Function, private onLoseContext: any) {
 
             super(game, 100, 100, 'friend', 0);
 
@@ -41,6 +43,10 @@ module GameBp {
             + 1.1 * this.weapon.height * Math.cos(this.angle);
 
             this.game.physics.arcade.collide(this.weapon, this.enemy, this.onWin, null, this.onWinContext);
+        }
+
+        die() {
+            this.onLose.call(this.onLoseContext);
         }
     }
 }

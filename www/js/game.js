@@ -208,11 +208,13 @@ var GameBp;
 (function (GameBp) {
     var Player = (function (_super) {
         __extends(Player, _super);
-        function Player(game, enemy, onWin, onWinContext) {
+        function Player(game, enemy, onWin, onWinContext, onLose, onLoseContext) {
             _super.call(this, game, 100, 100, 'friend', 0);
             this.enemy = enemy;
             this.onWin = onWin;
             this.onWinContext = onWinContext;
+            this.onLose = onLose;
+            this.onLoseContext = onLoseContext;
             this.angle = 0;
 
             this.addDefaultBody();
@@ -240,6 +242,10 @@ var GameBp;
             this.weapon.body.y = this.y - this.weapon.body.height / 2 + 1.1 * this.weapon.height * Math.cos(this.angle);
 
             this.game.physics.arcade.collide(this.weapon, this.enemy, this.onWin, null, this.onWinContext);
+        };
+
+        Player.prototype.die = function () {
+            this.onLose.call(this.onLoseContext);
         };
         return Player;
     })(GameBp.GameObject);
@@ -349,11 +355,10 @@ var GameBp;
         }
         GameScene.prototype.preload = function () {
             GameBp.Player.preload(this);
+            GameBp.Enemy.preload(this);
 
             this.load.tilemap('map', 'assets/tilemaps/test-ground-50x50.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.image('tileset', 'assets/tilesets/hyptosis.png');
-
-            this.load.image('enemy', 'assets/placeholder/img/headBlack.png');
             this.load.audio('hit', Utils.getAudioFileArray('assets/placeholder/fx/hit'));
             //            this.game.gameplayMusic.play();
         };
@@ -373,31 +378,14 @@ var GameBp;
             var tutorialString = "shoot the black guy,\ndon't shot the white guy.";
             this.game.add.bitmapText(10, 10, 'bmFont', tutorialString, 50);
 
-            this.enemy = this.add.sprite(200, 200, "enemy");
-            this.addDefaultBody(this.enemy);
-            this.addInputHandler(this.enemy, this.onWin);
+            this.player = new GameBp.Player(this.game, this.enemy, this.onWin, this, this.onLose, this);
 
-            this.player = new GameBp.Player(this.game, this.enemy, this.onWin, this);
+            this.enemy = new GameBp.Enemy(this.game, this.player);
 
             this.camera.follow(this.player);
         };
 
         GameScene.prototype.update = function () {
-            // object1, object2, collideCallback, processCallback, callbackContext
-            this.physics.arcade.collide(this.player, this.enemy, this.onLose, null, this);
-        };
-
-        GameScene.prototype.addDefaultBody = function (sprite) {
-            this.game.physics.arcade.enable(sprite);
-            var body = sprite.body;
-            sprite.anchor.set(0.5);
-            body.collideWorldBounds = true;
-            body.setSize(sprite.width * 0.6, sprite.height * 0.6);
-        };
-
-        GameScene.prototype.addInputHandler = function (sprite, callback) {
-            sprite.inputEnabled = true;
-            sprite.events.onInputDown.add(callback, this);
         };
 
         GameScene.prototype.onWin = function () {
@@ -493,4 +481,25 @@ var Utils;
     Utils.getAudioFileArray = getAudioFileArray;
     ;
 })(Utils || (Utils = {}));
+var GameBp;
+(function (GameBp) {
+    var Enemy = (function (_super) {
+        __extends(Enemy, _super);
+        function Enemy(game, player) {
+            _super.call(this, game, 200, 200, 'enemy', 0);
+            this.player = player;
+
+            this.addDefaultBody();
+        }
+        Enemy.preload = function (scene) {
+            scene.load.image('enemy', 'assets/placeholder/img/headBlack.png');
+        };
+
+        Enemy.prototype.update = function () {
+            this.game.physics.arcade.collide(this.player, this, this.player.die, null, this.player);
+        };
+        return Enemy;
+    })(GameBp.GameObject);
+    GameBp.Enemy = Enemy;
+})(GameBp || (GameBp = {}));
 //# sourceMappingURL=game.js.map
