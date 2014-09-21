@@ -65,6 +65,8 @@ declare module GameBp {
         public hitSound: Phaser.Sound;
         public player: Phaser.Sprite;
         public enemy: Phaser.Sprite;
+        public weapon: Phaser.Sprite;
+        public angle: number;
         public preload(): void;
         public create(): void;
         public update(): void;

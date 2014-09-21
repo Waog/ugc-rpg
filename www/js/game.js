@@ -282,12 +282,14 @@ var GameBp;
         __extends(GameScene, _super);
         function GameScene() {
             _super.apply(this, arguments);
+            this.angle = 0;
         }
         GameScene.prototype.preload = function () {
             this.load.tilemap('map', 'assets/tilemaps/test-ground-50x50.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.image('tileset', 'assets/tilesets/hyptosis.png');
 
             this.load.image('enemy', 'assets/placeholder/img/headBlack.png');
+            this.load.image('weapon', 'assets/placeholder/img/starRed.png');
             this.load.image('friend', 'assets/placeholder/img/headWhite.png');
             this.load.audio('hit', Utils.getAudioFileArray('assets/placeholder/fx/hit'));
             //            this.game.gameplayMusic.play();
@@ -316,6 +318,15 @@ var GameBp;
             this.addInputHandler(this.player, this.onLose);
             this.addDefaultBody(this.player);
 
+            this.weapon = this.add.sprite(100, 100, "weapon");
+            this.addDefaultBody(this.weapon);
+            this.weapon.scale.x = 0.5;
+            this.weapon.scale.y = 0.5;
+            var tween = this.add.tween(this);
+            tween.to({ angle: 2 * Math.PI }, 3000);
+            tween.repeat(Number.MAX_VALUE);
+            tween.start();
+
             this.camera.follow(this.player);
         };
 
@@ -326,8 +337,12 @@ var GameBp;
                 this.player.body.velocity.set(0);
             }
 
+            this.weapon.body.x = this.player.x - this.weapon.body.width / 2 + 1.1 * this.weapon.width * Math.sin(this.angle);
+            this.weapon.body.y = this.player.y - this.weapon.body.height / 2 + 1.1 * this.weapon.height * Math.cos(this.angle);
+
             // object1, object2, collideCallback, processCallback, callbackContext
             this.physics.arcade.collide(this.player, this.enemy, this.onLose, null, this);
+            this.physics.arcade.collide(this.weapon, this.enemy, this.onWin, null, this);
         };
 
         GameScene.prototype.addDefaultBody = function (sprite) {
@@ -361,6 +376,7 @@ var GameBp;
         GameScene.prototype.render = function () {
             this.game.debug.body(this.player);
             this.game.debug.body(this.enemy);
+            this.game.debug.body(this.weapon);
         };
         return GameScene;
     })(Phaser.State);
