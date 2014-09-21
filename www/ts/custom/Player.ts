@@ -3,7 +3,7 @@ module GameBp {
     export class Player extends GameObject {
 
         weapon: Phaser.Sprite;
-        angle: number = 0;
+        weaponAngle: number = 0;
 
         public static preload(scene: Phaser.State) {
 
@@ -12,7 +12,7 @@ module GameBp {
         }
 
 
-        constructor(game: Phaser.Game, private enemy: Phaser.Sprite,
+        constructor(game: Phaser.Game, private enemyGroup: Phaser.Group,
             private onWin: Function, private onWinContext: any,
             private onLose: Function, private onLoseContext: any) {
 
@@ -35,14 +35,15 @@ module GameBp {
                 this.body.velocity.set(0);
             }
 
-            this.angle += this.game.time.elapsed / 1000;
+            this.weaponAngle += this.game.time.elapsed / 500;
 
+            var radius: number = 1.3;
             this.weapon.body.x = this.x - this.weapon.body.width / 2
-            + 1.1 * this.weapon.width * Math.sin(this.angle);
+            + radius * this.weapon.width * Math.sin(this.weaponAngle);
             this.weapon.body.y = this.y - this.weapon.body.height / 2
-            + 1.1 * this.weapon.height * Math.cos(this.angle);
+            + radius * this.weapon.height * Math.cos(this.weaponAngle);
 
-            this.game.physics.arcade.collide(this.weapon, this.enemy, this.onWin, null, this.onWinContext);
+            this.game.physics.arcade.collide(this.weapon, this.enemyGroup, Enemy.handleWeaponCollision);
         }
 
         die() {

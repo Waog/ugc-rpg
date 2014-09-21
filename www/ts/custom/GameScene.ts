@@ -7,12 +7,13 @@ module GameBp {
         hitSound: Phaser.Sound;
         player: Player;
         enemy: Enemy;
+        enemyGroup: Phaser.Group;
 
         preload() {
 
             Player.preload(this);
             Enemy.preload(this);
-            
+
             this.load.tilemap('map', 'assets/tilemaps/test-ground-50x50.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.image('tileset', 'assets/tilesets/hyptosis.png');
             this.load.audio('hit', Utils
@@ -39,14 +40,22 @@ module GameBp {
             var tutorialString = "shoot the black guy,\ndon't shot the white guy.";
             this.game.add.bitmapText(10, 10, 'bmFont', tutorialString, 50);
 
-            this.player = new Player(this.game, this.enemy, this.onWin, this, this.onLose, this);
+            this.enemyGroup = this.add.group();
+            this.enemyGroup.enableBody = true;
+            this.enemyGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
-            this.enemy = new Enemy(this.game, this.player);
-            
+            this.player = new Player(this.game, this.enemyGroup, this.onWin, this, this.onLose, this);
+
+            this.enemyGroup.add(new Enemy(this.game, this.player, 200, 200));
+            this.enemyGroup.add(new Enemy(this.game, this.player, 300, 200));
+
             this.camera.follow(this.player);
         }
 
         update() {
+            if (this.enemyGroup.length == 0) {
+                this.onWin();
+            }
         }
 
         onWin() {
@@ -70,7 +79,6 @@ module GameBp {
 
         render() {
             this.game.debug.body(this.player);
-            this.game.debug.body(this.enemy);
         }
     }
 }

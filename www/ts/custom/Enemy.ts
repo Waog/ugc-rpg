@@ -8,9 +8,9 @@ module GameBp {
         }
 
 
-        constructor(game: Phaser.Game, private player: Player) {
+        constructor(game: Phaser.Game, private player: Player, x: number = 200, y: number = 200) {
 
-            super(game, 200, 200, 'enemy', 0);
+            super(game, x, y, 'enemy', 0);
 
             this.addDefaultBody();
 
@@ -18,7 +18,17 @@ module GameBp {
 
 
         update() {
+        
             this.game.physics.arcade.collide(this.player, this, this.player.die, null, this.player);
+        }
+
+        static handleWeaponCollision(weapon: Phaser.Sprite, enemy: Enemy) {
+        
+            enemy.die();
+        }
+
+        die() {
+            this.parent.removeChild(this);
         }
     }
 }

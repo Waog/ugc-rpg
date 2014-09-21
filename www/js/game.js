@@ -208,14 +208,14 @@ var GameBp;
 (function (GameBp) {
     var Player = (function (_super) {
         __extends(Player, _super);
-        function Player(game, enemy, onWin, onWinContext, onLose, onLoseContext) {
+        function Player(game, enemyGroup, onWin, onWinContext, onLose, onLoseContext) {
             _super.call(this, game, 100, 100, 'friend', 0);
-            this.enemy = enemy;
+            this.enemyGroup = enemyGroup;
             this.onWin = onWin;
             this.onWinContext = onWinContext;
             this.onLose = onLose;
             this.onLoseContext = onLoseContext;
-            this.angle = 0;
+            this.weaponAngle = 0;
 
             this.addDefaultBody();
 
@@ -236,12 +236,13 @@ var GameBp;
                 this.body.velocity.set(0);
             }
 
-            this.angle += this.game.time.elapsed / 1000;
+            this.weaponAngle += this.game.time.elapsed / 500;
 
-            this.weapon.body.x = this.x - this.weapon.body.width / 2 + 1.1 * this.weapon.width * Math.sin(this.angle);
-            this.weapon.body.y = this.y - this.weapon.body.height / 2 + 1.1 * this.weapon.height * Math.cos(this.angle);
+            var radius = 1.3;
+            this.weapon.body.x = this.x - this.weapon.body.width / 2 + radius * this.weapon.width * Math.sin(this.weaponAngle);
+            this.weapon.body.y = this.y - this.weapon.body.height / 2 + radius * this.weapon.height * Math.cos(this.weaponAngle);
 
-            this.game.physics.arcade.collide(this.weapon, this.enemy, this.onWin, null, this.onWinContext);
+            this.game.physics.arcade.collide(this.weapon, this.enemyGroup, GameBp.Enemy.handleWeaponCollision);
         };
 
         Player.prototype.die = function () {
@@ -378,14 +379,22 @@ var GameBp;
             var tutorialString = "shoot the black guy,\ndon't shot the white guy.";
             this.game.add.bitmapText(10, 10, 'bmFont', tutorialString, 50);
 
-            this.player = new GameBp.Player(this.game, this.enemy, this.onWin, this, this.onLose, this);
+            this.enemyGroup = this.add.group();
+            this.enemyGroup.enableBody = true;
+            this.enemyGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
-            this.enemy = new GameBp.Enemy(this.game, this.player);
+            this.player = new GameBp.Player(this.game, this.enemyGroup, this.onWin, this, this.onLose, this);
+
+            this.enemyGroup.add(new GameBp.Enemy(this.game, this.player, 200, 200));
+            this.enemyGroup.add(new GameBp.Enemy(this.game, this.player, 300, 200));
 
             this.camera.follow(this.player);
         };
 
         GameScene.prototype.update = function () {
+            if (this.enemyGroup.length == 0) {
+                this.onWin();
+            }
         };
 
         GameScene.prototype.onWin = function () {
@@ -405,7 +414,6 @@ var GameBp;
 
         GameScene.prototype.render = function () {
             this.game.debug.body(this.player);
-            this.game.debug.body(this.enemy);
         };
         return GameScene;
     })(Phaser.State);
@@ -485,8 +493,10 @@ var GameBp;
 (function (GameBp) {
     var Enemy = (function (_super) {
         __extends(Enemy, _super);
-        function Enemy(game, player) {
-            _super.call(this, game, 200, 200, 'enemy', 0);
+        function Enemy(game, player, x, y) {
+            if (typeof x === "undefined") { x = 200; }
+            if (typeof y === "undefined") { y = 200; }
+            _super.call(this, game, x, y, 'enemy', 0);
             this.player = player;
 
             this.addDefaultBody();
@@ -497,6 +507,14 @@ var GameBp;
 
         Enemy.prototype.update = function () {
             this.game.physics.arcade.collide(this.player, this, this.player.die, null, this.player);
+        };
+
+        Enemy.handleWeaponCollision = function (weapon, enemy) {
+            enemy.die();
+        };
+
+        Enemy.prototype.die = function () {
+            this.parent.removeChild(this);
         };
         return Enemy;
     })(GameBp.GameObject);
