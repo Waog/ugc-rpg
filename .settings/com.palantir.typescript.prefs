@@ -1,0 +1,4 @@
+build.path.sourceFolder=www/ts
+compiler.outputDirOption=www/js
+compiler.outputFileOption=game.js
+eclipse.preferences.version=1

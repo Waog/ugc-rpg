@@ -23,7 +23,7 @@ module GameBp {
             this.background.height = this.game.world.height;
             this.background.alpha = 0;
 
-            this.logo = this.add.bitmapText(this.world.centerX, -200, 'bmFont', 'phaser-bp', 120);
+            this.logo = this.add.bitmapText(this.world.centerX, -200, 'bmFont', 'UGC', 120);
             this.logo.x = this.world.centerX - this.logo.width / 2;
 
             this.add.tween(this.background).to({ alpha: 1 }, 1000, Phaser.Easing.Bounce.InOut, true);
