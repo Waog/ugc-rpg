@@ -190,11 +190,15 @@ var GameBp;
             game.add.existing(this);
         }
         GameObject.prototype.addDefaultBody = function () {
-            this.game.physics.arcade.enable(this);
-            var body = this.body;
-            this.anchor.set(0.5);
-            body.collideWorldBounds = true;
-            body.setSize(this.width * 0.6, this.height * 0.6);
+            GameObject.addBody(this);
+            this.body.collideWorldBounds = true;
+        };
+
+        GameObject.addBody = function (sprite) {
+            sprite.game.physics.arcade.enable(sprite);
+            var body = sprite.body;
+            sprite.anchor.set(0.5);
+            body.setSize(sprite.width * 0.6, sprite.height * 0.6);
         };
         return GameObject;
     })(Phaser.Sprite);
@@ -204,10 +208,19 @@ var GameBp;
 (function (GameBp) {
     var Player = (function (_super) {
         __extends(Player, _super);
-        function Player(game) {
+        function Player(game, enemy, onWin, onWinContext) {
             _super.call(this, game, 100, 100, 'friend', 0);
+            this.enemy = enemy;
+            this.onWin = onWin;
+            this.onWinContext = onWinContext;
+            this.angle = 0;
 
             this.addDefaultBody();
+
+            this.weapon = this.game.add.sprite(100, 100, "weapon");
+            GameBp.GameObject.addBody(this.weapon);
+            this.weapon.scale.x = 0.5;
+            this.weapon.scale.y = 0.5;
         }
         Player.preload = function (scene) {
             scene.load.image('weapon', 'assets/placeholder/img/starRed.png');
@@ -220,6 +233,13 @@ var GameBp;
             } else {
                 this.body.velocity.set(0);
             }
+
+            this.angle += this.game.time.elapsed / 1000;
+
+            this.weapon.body.x = this.x - this.weapon.body.width / 2 + 1.1 * this.weapon.width * Math.sin(this.angle);
+            this.weapon.body.y = this.y - this.weapon.body.height / 2 + 1.1 * this.weapon.height * Math.cos(this.angle);
+
+            this.game.physics.arcade.collide(this.weapon, this.enemy, this.onWin, null, this.onWinContext);
         };
         return Player;
     })(GameBp.GameObject);
@@ -326,7 +346,6 @@ var GameBp;
         __extends(GameScene, _super);
         function GameScene() {
             _super.apply(this, arguments);
-            this.angle = 0;
         }
         GameScene.prototype.preload = function () {
             GameBp.Player.preload(this);
@@ -358,27 +377,14 @@ var GameBp;
             this.addDefaultBody(this.enemy);
             this.addInputHandler(this.enemy, this.onWin);
 
-            this.player = new GameBp.Player(this.game);
-
-            this.weapon = this.add.sprite(100, 100, "weapon");
-            this.addDefaultBody(this.weapon);
-            this.weapon.scale.x = 0.5;
-            this.weapon.scale.y = 0.5;
-            var tween = this.add.tween(this);
-            tween.to({ angle: 2 * Math.PI }, 3000);
-            tween.repeat(Number.MAX_VALUE);
-            tween.start();
+            this.player = new GameBp.Player(this.game, this.enemy, this.onWin, this);
 
             this.camera.follow(this.player);
         };
 
         GameScene.prototype.update = function () {
-            this.weapon.body.x = this.player.x - this.weapon.body.width / 2 + 1.1 * this.weapon.width * Math.sin(this.angle);
-            this.weapon.body.y = this.player.y - this.weapon.body.height / 2 + 1.1 * this.weapon.height * Math.cos(this.angle);
-
             // object1, object2, collideCallback, processCallback, callbackContext
             this.physics.arcade.collide(this.player, this.enemy, this.onLose, null, this);
-            this.physics.arcade.collide(this.weapon, this.enemy, this.onWin, null, this);
         };
 
         GameScene.prototype.addDefaultBody = function (sprite) {
@@ -412,7 +418,6 @@ var GameBp;
         GameScene.prototype.render = function () {
             this.game.debug.body(this.player);
             this.game.debug.body(this.enemy);
-            this.game.debug.body(this.weapon);
         };
         return GameScene;
     })(Phaser.State);

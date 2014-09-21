@@ -42,12 +42,18 @@ declare module GameBp {
     class GameObject extends Phaser.Sprite {
         constructor(game: Phaser.Game, x: number, y: number, key?: any, frame?: any);
         public addDefaultBody(): void;
+        static addBody(sprite: Phaser.Sprite): void;
     }
 }
 declare module GameBp {
     class Player extends GameObject {
+        private enemy;
+        private onWin;
+        private onWinContext;
+        public weapon: Phaser.Sprite;
+        public angle: number;
         static preload(scene: Phaser.State): void;
-        constructor(game: Phaser.Game);
+        constructor(game: Phaser.Game, enemy: Phaser.Sprite, onWin: Function, onWinContext: any);
         public update(): void;
     }
 }
@@ -78,8 +84,6 @@ declare module GameBp {
         public hitSound: Phaser.Sound;
         public player: Player;
         public enemy: Phaser.Sprite;
-        public weapon: Phaser.Sprite;
-        public angle: number;
         public preload(): void;
         public create(): void;
         public update(): void;

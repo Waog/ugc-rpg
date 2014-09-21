@@ -7,13 +7,11 @@ module GameBp {
         hitSound: Phaser.Sound;
         player: Player;
         enemy: Phaser.Sprite;
-        weapon: Phaser.Sprite;
-        angle: number = 0;
 
         preload() {
-            
+
             Player.preload(this);
-            
+
             this.load.tilemap('map', 'assets/tilemaps/test-ground-50x50.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.image('tileset', 'assets/tilesets/hyptosis.png');
 
@@ -47,30 +45,15 @@ module GameBp {
             this.addInputHandler(this.enemy, this.onWin);
 
 
-            this.player = new Player(this.game);
-
-            this.weapon = this.add.sprite(100, 100, "weapon");
-            this.addDefaultBody(this.weapon);
-            this.weapon.scale.x = 0.5;
-            this.weapon.scale.y = 0.5;
-            var tween = this.add.tween(this);
-            tween.to({ angle: 2 * Math.PI }, 3000);
-            tween.repeat(Number.MAX_VALUE);
-            tween.start();
+            this.player = new Player(this.game, this.enemy, this.onWin, this);
 
             this.camera.follow(this.player);
         }
 
         update() {
 
-            this.weapon.body.x = this.player.x - this.weapon.body.width / 2
-            + 1.1 * this.weapon.width * Math.sin(this.angle);
-            this.weapon.body.y = this.player.y - this.weapon.body.height / 2
-            + 1.1 * this.weapon.height * Math.cos(this.angle);
-
             // object1, object2, collideCallback, processCallback, callbackContext
             this.physics.arcade.collide(this.player, this.enemy, this.onLose, null, this);
-            this.physics.arcade.collide(this.weapon, this.enemy, this.onWin, null, this);
         }
 
         addDefaultBody(sprite: Phaser.Sprite) {
@@ -111,7 +94,6 @@ module GameBp {
         render() {
             this.game.debug.body(this.player);
             this.game.debug.body(this.enemy);
-            this.game.debug.body(this.weapon);
         }
     }
 }

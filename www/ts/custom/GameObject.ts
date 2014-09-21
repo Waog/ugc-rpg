@@ -10,11 +10,15 @@ module GameBp {
         }
 
         public addDefaultBody() {
-            this.game.physics.arcade.enable(this);
-            var body: Phaser.Physics.Arcade.Body = this.body;
-            this.anchor.set(0.5);
-            body.collideWorldBounds = true;
-            body.setSize(this.width * 0.6, this.height * 0.6);
+            GameObject.addBody(this);
+            this.body.collideWorldBounds = true;
+        }
+
+        public static addBody(sprite: Phaser.Sprite) {
+            sprite.game.physics.arcade.enable(sprite);
+            var body: Phaser.Physics.Arcade.Body = sprite.body;
+            sprite.anchor.set(0.5);
+            body.setSize(sprite.width * 0.6, sprite.height * 0.6);
         }
     }
 }
