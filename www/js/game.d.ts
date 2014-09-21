@@ -64,14 +64,16 @@ declare module GameBp {
         public music: Phaser.Sound;
         public hitSound: Phaser.Sound;
         public player: Phaser.Sprite;
+        public enemy: Phaser.Sprite;
         public preload(): void;
         public create(): void;
         public update(): void;
-        public addPhysicsMovmentAndColision(sprite: Phaser.Sprite): void;
+        public addDefaultBody(sprite: Phaser.Sprite): void;
         public addInputHandler(sprite: Phaser.Sprite, callback: Function): void;
         public onWin(): void;
         public onLose(): void;
         public shutdown(): void;
+        public render(): void;
     }
 }
 declare module GameBp {

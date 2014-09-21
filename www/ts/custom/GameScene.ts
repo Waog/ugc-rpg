@@ -6,6 +6,7 @@ module GameBp {
         music: Phaser.Sound;
         hitSound: Phaser.Sound;
         player: Phaser.Sprite;
+        enemy: Phaser.Sprite;
 
         preload() {
 
@@ -38,35 +39,35 @@ module GameBp {
             var tutorialString = "shoot the black guy,\ndon't shot the white guy.";
             this.game.add.bitmapText(10, 10, 'bmFont', tutorialString, 50);
 
-            var enemy = this.add.sprite(100, 100, "enemy");
-            this.addPhysicsMovmentAndColision(enemy);
-            this.addInputHandler(enemy, this.onWin);
+            this.enemy = this.add.sprite(200, 200, "enemy");
+            this.addDefaultBody(this.enemy);
+            this.addInputHandler(this.enemy, this.onWin);
 
             this.player = this.add.sprite(100, 100, "friend");
             this.addInputHandler(this.player, this.onLose);
-            this.physics.arcade.enable(this.player);
-            this.player.body.collideWorldBounds = true;
+            this.addDefaultBody(this.player);
 
             this.camera.follow(this.player);
         }
 
         update() {
             if (this.input.activePointer.isDown) {
-                this.physics.arcade.moveToPointer(this.player, 300);
+                this.physics.arcade.moveToPointer(this.player, 100);
             }
             else {
                 this.player.body.velocity.set(0);
             }
+
+            // object1, object2, collideCallback, processCallback, callbackContext
+            this.physics.arcade.collide(this.player, this.enemy, this.onLose, null, this);
         }
 
-        addPhysicsMovmentAndColision(sprite: Phaser.Sprite) {
-
+        addDefaultBody(sprite: Phaser.Sprite) {
             this.game.physics.arcade.enable(sprite);
-            sprite.body.velocity.x = 50 + Math.random() * 50;
-            sprite.body.velocity.y = 50 + Math.random() * 50;
-            sprite.body.bounce.x = 1;
-            sprite.body.bounce.y = 1;
-            sprite.body.collideWorldBounds = true;
+            var body: Phaser.Physics.Arcade.Body = sprite.body;
+            sprite.anchor.set(0.5);
+            body.collideWorldBounds = true;
+            body.setSize(sprite.width * 0.6, sprite.height * 0.6);
         }
 
 
@@ -95,5 +96,10 @@ module GameBp {
             //            this.game.gameplayMusic.stop();
             this.world.setBounds(0, 0, 640, 480);
         }
+
+        render() {
+            this.game.debug.body(this.player);
+            this.game.debug.body(this.enemy);
+        }
     }
-} 
+}
