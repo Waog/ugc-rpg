@@ -5,19 +5,19 @@ module GameBp {
         background: Phaser.Sprite;
         music: Phaser.Sound;
         hitSound: Phaser.Sound;
-        player: Phaser.Sprite;
+        player: Player;
         enemy: Phaser.Sprite;
         weapon: Phaser.Sprite;
         angle: number = 0;
 
         preload() {
-
+            
+            Player.preload(this);
+            
             this.load.tilemap('map', 'assets/tilemaps/test-ground-50x50.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.image('tileset', 'assets/tilesets/hyptosis.png');
 
             this.load.image('enemy', 'assets/placeholder/img/headBlack.png');
-            this.load.image('weapon', 'assets/placeholder/img/starRed.png');
-            this.load.image('friend', 'assets/placeholder/img/headWhite.png');
             this.load.audio('hit', Utils
                 .getAudioFileArray('assets/placeholder/fx/hit'));
 
@@ -46,9 +46,8 @@ module GameBp {
             this.addDefaultBody(this.enemy);
             this.addInputHandler(this.enemy, this.onWin);
 
-            this.player = this.add.sprite(100, 100, "friend");
-            this.addInputHandler(this.player, this.onLose);
-            this.addDefaultBody(this.player);
+
+            this.player = new Player(this.game);
 
             this.weapon = this.add.sprite(100, 100, "weapon");
             this.addDefaultBody(this.weapon);
@@ -59,19 +58,10 @@ module GameBp {
             tween.repeat(Number.MAX_VALUE);
             tween.start();
 
-
             this.camera.follow(this.player);
-
-
         }
 
         update() {
-            if (this.input.activePointer.isDown) {
-                this.physics.arcade.moveToPointer(this.player, 100);
-            }
-            else {
-                this.player.body.velocity.set(0);
-            }
 
             this.weapon.body.x = this.player.x - this.weapon.body.width / 2
             + 1.1 * this.weapon.width * Math.sin(this.angle);

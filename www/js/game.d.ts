@@ -39,6 +39,19 @@ declare module GameBp {
     }
 }
 declare module GameBp {
+    class GameObject extends Phaser.Sprite {
+        constructor(game: Phaser.Game, x: number, y: number, key?: any, frame?: any);
+        public addDefaultBody(): void;
+    }
+}
+declare module GameBp {
+    class Player extends GameObject {
+        static preload(scene: Phaser.State): void;
+        constructor(game: Phaser.Game);
+        public update(): void;
+    }
+}
+declare module GameBp {
     class Preloader extends Phaser.State {
         public preloadBg: Phaser.Sprite;
         public preloadBar: Phaser.Sprite;
@@ -63,7 +76,7 @@ declare module GameBp {
         public background: Phaser.Sprite;
         public music: Phaser.Sound;
         public hitSound: Phaser.Sound;
-        public player: Phaser.Sprite;
+        public player: Player;
         public enemy: Phaser.Sprite;
         public weapon: Phaser.Sprite;
         public angle: number;

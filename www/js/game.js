@@ -183,6 +183,50 @@ var GameBp;
 })(GameBp || (GameBp = {}));
 var GameBp;
 (function (GameBp) {
+    var GameObject = (function (_super) {
+        __extends(GameObject, _super);
+        function GameObject(game, x, y, key, frame) {
+            _super.call(this, game, x, y, key, frame);
+            game.add.existing(this);
+        }
+        GameObject.prototype.addDefaultBody = function () {
+            this.game.physics.arcade.enable(this);
+            var body = this.body;
+            this.anchor.set(0.5);
+            body.collideWorldBounds = true;
+            body.setSize(this.width * 0.6, this.height * 0.6);
+        };
+        return GameObject;
+    })(Phaser.Sprite);
+    GameBp.GameObject = GameObject;
+})(GameBp || (GameBp = {}));
+var GameBp;
+(function (GameBp) {
+    var Player = (function (_super) {
+        __extends(Player, _super);
+        function Player(game) {
+            _super.call(this, game, 100, 100, 'friend', 0);
+
+            this.addDefaultBody();
+        }
+        Player.preload = function (scene) {
+            scene.load.image('weapon', 'assets/placeholder/img/starRed.png');
+            scene.load.image('friend', 'assets/placeholder/img/headWhite.png');
+        };
+
+        Player.prototype.update = function () {
+            if (this.game.input.activePointer.isDown) {
+                this.game.physics.arcade.moveToPointer(this, 100);
+            } else {
+                this.body.velocity.set(0);
+            }
+        };
+        return Player;
+    })(GameBp.GameObject);
+    GameBp.Player = Player;
+})(GameBp || (GameBp = {}));
+var GameBp;
+(function (GameBp) {
     var Preloader = (function (_super) {
         __extends(Preloader, _super);
         function Preloader() {
@@ -285,12 +329,12 @@ var GameBp;
             this.angle = 0;
         }
         GameScene.prototype.preload = function () {
+            GameBp.Player.preload(this);
+
             this.load.tilemap('map', 'assets/tilemaps/test-ground-50x50.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.image('tileset', 'assets/tilesets/hyptosis.png');
 
             this.load.image('enemy', 'assets/placeholder/img/headBlack.png');
-            this.load.image('weapon', 'assets/placeholder/img/starRed.png');
-            this.load.image('friend', 'assets/placeholder/img/headWhite.png');
             this.load.audio('hit', Utils.getAudioFileArray('assets/placeholder/fx/hit'));
             //            this.game.gameplayMusic.play();
         };
@@ -314,9 +358,7 @@ var GameBp;
             this.addDefaultBody(this.enemy);
             this.addInputHandler(this.enemy, this.onWin);
 
-            this.player = this.add.sprite(100, 100, "friend");
-            this.addInputHandler(this.player, this.onLose);
-            this.addDefaultBody(this.player);
+            this.player = new GameBp.Player(this.game);
 
             this.weapon = this.add.sprite(100, 100, "weapon");
             this.addDefaultBody(this.weapon);
@@ -331,12 +373,6 @@ var GameBp;
         };
 
         GameScene.prototype.update = function () {
-            if (this.input.activePointer.isDown) {
-                this.physics.arcade.moveToPointer(this.player, 100);
-            } else {
-                this.player.body.velocity.set(0);
-            }
-
             this.weapon.body.x = this.player.x - this.weapon.body.width / 2 + 1.1 * this.weapon.width * Math.sin(this.angle);
             this.weapon.body.y = this.player.y - this.weapon.body.height / 2 + 1.1 * this.weapon.height * Math.cos(this.angle);
 
