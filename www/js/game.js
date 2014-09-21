@@ -312,9 +312,20 @@ var GameBp;
             this.addPhysicsMovmentAndColision(enemy);
             this.addInputHandler(enemy, this.onWin);
 
-            var friend = this.add.sprite(100, 100, "friend");
-            this.addPhysicsMovmentAndColision(friend);
-            this.addInputHandler(friend, this.onLose);
+            this.player = this.add.sprite(100, 100, "friend");
+            this.addInputHandler(this.player, this.onLose);
+            this.physics.arcade.enable(this.player);
+            this.player.body.collideWorldBounds = true;
+
+            this.camera.follow(this.player);
+        };
+
+        GameScene.prototype.update = function () {
+            if (this.input.activePointer.isDown) {
+                this.physics.arcade.moveToPointer(this.player, 300);
+            } else {
+                this.player.body.velocity.set(0);
+            }
         };
 
         GameScene.prototype.addPhysicsMovmentAndColision = function (sprite) {
@@ -343,6 +354,7 @@ var GameBp;
 
         GameScene.prototype.shutdown = function () {
             //            this.game.gameplayMusic.stop();
+            this.world.setBounds(0, 0, 640, 480);
         };
         return GameScene;
     })(Phaser.State);

@@ -63,8 +63,10 @@ declare module GameBp {
         public background: Phaser.Sprite;
         public music: Phaser.Sound;
         public hitSound: Phaser.Sound;
+        public player: Phaser.Sprite;
         public preload(): void;
         public create(): void;
+        public update(): void;
         public addPhysicsMovmentAndColision(sprite: Phaser.Sprite): void;
         public addInputHandler(sprite: Phaser.Sprite, callback: Function): void;
         public onWin(): void;

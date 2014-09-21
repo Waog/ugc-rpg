@@ -5,6 +5,7 @@ module GameBp {
         background: Phaser.Sprite;
         music: Phaser.Sound;
         hitSound: Phaser.Sound;
+        player: Phaser.Sprite;
 
         preload() {
 
@@ -41,11 +42,22 @@ module GameBp {
             this.addPhysicsMovmentAndColision(enemy);
             this.addInputHandler(enemy, this.onWin);
 
-            var friend = this.add.sprite(100, 100, "friend");
-            this.addPhysicsMovmentAndColision(friend);
-            this.addInputHandler(friend, this.onLose);
+            this.player = this.add.sprite(100, 100, "friend");
+            this.addInputHandler(this.player, this.onLose);
+            this.physics.arcade.enable(this.player);
+            this.player.body.collideWorldBounds = true;
+
+            this.camera.follow(this.player);
         }
 
+        update() {
+            if (this.input.activePointer.isDown) {
+                this.physics.arcade.moveToPointer(this.player, 300);
+            }
+            else {
+                this.player.body.velocity.set(0);
+            }
+        }
 
         addPhysicsMovmentAndColision(sprite: Phaser.Sprite) {
 
@@ -81,8 +93,7 @@ module GameBp {
 
         shutdown() {
             //            this.game.gameplayMusic.stop();
+            this.world.setBounds(0, 0, 640, 480);
         }
-
     }
-
 } 
