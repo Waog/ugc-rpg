@@ -284,7 +284,7 @@ var GameBp;
             _super.apply(this, arguments);
         }
         GameScene.prototype.preload = function () {
-            this.load.tilemap('map', 'assets/tilemaps/test-ground-5x5.json', null, Phaser.Tilemap.TILED_JSON);
+            this.load.tilemap('map', 'assets/tilemaps/test-ground-50x50.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.image('tileset', 'assets/tilesets/hyptosis.png');
 
             this.load.image('enemy', 'assets/placeholder/img/headBlack.png');
