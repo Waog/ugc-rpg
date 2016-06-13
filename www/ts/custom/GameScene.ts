@@ -2,11 +2,9 @@ module GameBp {
 
     export class GameScene extends Phaser.State {
 
-        background: Phaser.Sprite;
         music: Phaser.Sound;
         hitSound: Phaser.Sound;
         player: Player;
-        enemy: Enemy;
         enemyGroup: Phaser.Group;
 
         preload() {
@@ -79,6 +77,9 @@ module GameBp {
 
         render() {
             this.game.debug.body(this.player);
+            this.game.debug.body(this.player.weapon);
+            this.game.debug.body(this.enemyGroup.getTop());
+            this.game.debug.body(this.enemyGroup.getBottom());
         }
     }
 }

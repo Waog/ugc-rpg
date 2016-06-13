@@ -2,8 +2,7 @@ module GameBp {
 
     export class Player extends GameObject {
 
-        weapon: Phaser.Sprite;
-        weaponAngle: number = 0;
+        public weapon: Phaser.Sprite;
 
         public static preload(scene: Phaser.State) {
 
@@ -20,10 +19,12 @@ module GameBp {
 
             this.addDefaultBody();
 
-            this.weapon = this.game.add.sprite(100, 100, "weapon");
+            this.weapon = this.game.add.sprite(320, 200, "weapon");
             GameObject.addBody(this.weapon);
             this.weapon.scale.x = 0.5;
             this.weapon.scale.y = 0.5;
+            this.weapon.parent.removeChild(this.weapon);
+            this.addChild(this.weapon);
         }
 
 
@@ -35,15 +36,29 @@ module GameBp {
                 this.body.velocity.set(0);
             }
 
-            this.weaponAngle += this.game.time.elapsed / 500;
-
-            var radius: number = 1.3;
-            this.weapon.body.x = this.x - this.weapon.body.width / 2
-            + radius * this.weapon.width * Math.sin(this.weaponAngle);
-            this.weapon.body.y = this.y - this.weapon.body.height / 2
-            + radius * this.weapon.height * Math.cos(this.weaponAngle);
-
             this.game.physics.arcade.collide(this.weapon, this.enemyGroup, Enemy.handleWeaponCollision);
+        }
+
+        attack(target: Enemy) {
+//            console.log('Attack!!');
+//
+//            // only attack if weapon not already active
+//            if (this.weapon.parent) {
+//                return;
+//            }
+//
+//            this.addChild(this.weapon);
+//            this.rotation = this.game.physics.arcade.angleBetween(this, target);
+//
+//            var tween: Phaser.Tween = this.game.add.tween(this.weapon.body);
+//            tween.to({ x: '+60' }, 200);
+//            tween.yoyo(true);
+//            tween.onComplete.add(this.onWeaponBack, this);
+//            tween.start();
+        }
+
+        onWeaponBack() {
+            this.weapon.parent.removeChild(this.weapon);
         }
 
         die() {

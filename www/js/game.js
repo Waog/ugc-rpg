@@ -206,6 +206,46 @@ var GameBp;
 })(GameBp || (GameBp = {}));
 var GameBp;
 (function (GameBp) {
+    var Enemy = (function (_super) {
+        __extends(Enemy, _super);
+        function Enemy(game, player, x, y) {
+            if (typeof x === "undefined") { x = 200; }
+            if (typeof y === "undefined") { y = 200; }
+            _super.call(this, game, x, y, 'enemy', 0);
+            this.player = player;
+
+            this.addDefaultBody();
+
+            this.inputEnabled = true;
+
+            this.events.onInputDown.add(this.onInputDown, this);
+        }
+        Enemy.preload = function (scene) {
+            scene.load.image('enemy', 'assets/placeholder/img/headBlack.png');
+        };
+
+        Enemy.prototype.onInputDown = function () {
+            this.player.attack(this);
+        };
+
+        Enemy.prototype.update = function () {
+            this.game.physics.arcade.collide(this.player, this, this.player.die, null, this.player);
+        };
+
+        Enemy.handleWeaponCollision = function (weapon, enemy) {
+            console.log('enemy: outch!');
+            enemy.die();
+        };
+
+        Enemy.prototype.die = function () {
+            this.parent.removeChild(this);
+        };
+        return Enemy;
+    })(GameBp.GameObject);
+    GameBp.Enemy = Enemy;
+})(GameBp || (GameBp = {}));
+var GameBp;
+(function (GameBp) {
     var Player = (function (_super) {
         __extends(Player, _super);
         function Player(game, enemyGroup, onWin, onWinContext, onLose, onLoseContext) {
@@ -215,14 +255,15 @@ var GameBp;
             this.onWinContext = onWinContext;
             this.onLose = onLose;
             this.onLoseContext = onLoseContext;
-            this.weaponAngle = 0;
 
             this.addDefaultBody();
 
-            this.weapon = this.game.add.sprite(100, 100, "weapon");
+            this.weapon = this.game.add.sprite(320, 200, "weapon");
             GameBp.GameObject.addBody(this.weapon);
             this.weapon.scale.x = 0.5;
             this.weapon.scale.y = 0.5;
+            this.weapon.parent.removeChild(this.weapon);
+            this.addChild(this.weapon);
         }
         Player.preload = function (scene) {
             scene.load.image('weapon', 'assets/placeholder/img/starRed.png');
@@ -236,13 +277,29 @@ var GameBp;
                 this.body.velocity.set(0);
             }
 
-            this.weaponAngle += this.game.time.elapsed / 500;
-
-            var radius = 1.3;
-            this.weapon.body.x = this.x - this.weapon.body.width / 2 + radius * this.weapon.width * Math.sin(this.weaponAngle);
-            this.weapon.body.y = this.y - this.weapon.body.height / 2 + radius * this.weapon.height * Math.cos(this.weaponAngle);
-
             this.game.physics.arcade.collide(this.weapon, this.enemyGroup, GameBp.Enemy.handleWeaponCollision);
+        };
+
+        Player.prototype.attack = function (target) {
+            //            console.log('Attack!!');
+            //
+            //            // only attack if weapon not already active
+            //            if (this.weapon.parent) {
+            //                return;
+            //            }
+            //
+            //            this.addChild(this.weapon);
+            //            this.rotation = this.game.physics.arcade.angleBetween(this, target);
+            //
+            //            var tween: Phaser.Tween = this.game.add.tween(this.weapon.body);
+            //            tween.to({ x: '+60' }, 200);
+            //            tween.yoyo(true);
+            //            tween.onComplete.add(this.onWeaponBack, this);
+            //            tween.start();
+        };
+
+        Player.prototype.onWeaponBack = function () {
+            this.weapon.parent.removeChild(this.weapon);
         };
 
         Player.prototype.die = function () {
@@ -414,6 +471,9 @@ var GameBp;
 
         GameScene.prototype.render = function () {
             this.game.debug.body(this.player);
+            this.game.debug.body(this.player.weapon);
+            this.game.debug.body(this.enemyGroup.getTop());
+            this.game.debug.body(this.enemyGroup.getBottom());
         };
         return GameScene;
     })(Phaser.State);
@@ -489,35 +549,4 @@ var Utils;
     Utils.getAudioFileArray = getAudioFileArray;
     ;
 })(Utils || (Utils = {}));
-var GameBp;
-(function (GameBp) {
-    var Enemy = (function (_super) {
-        __extends(Enemy, _super);
-        function Enemy(game, player, x, y) {
-            if (typeof x === "undefined") { x = 200; }
-            if (typeof y === "undefined") { y = 200; }
-            _super.call(this, game, x, y, 'enemy', 0);
-            this.player = player;
-
-            this.addDefaultBody();
-        }
-        Enemy.preload = function (scene) {
-            scene.load.image('enemy', 'assets/placeholder/img/headBlack.png');
-        };
-
-        Enemy.prototype.update = function () {
-            this.game.physics.arcade.collide(this.player, this, this.player.die, null, this.player);
-        };
-
-        Enemy.handleWeaponCollision = function (weapon, enemy) {
-            enemy.die();
-        };
-
-        Enemy.prototype.die = function () {
-            this.parent.removeChild(this);
-        };
-        return Enemy;
-    })(GameBp.GameObject);
-    GameBp.Enemy = Enemy;
-})(GameBp || (GameBp = {}));
 //# sourceMappingURL=game.js.map

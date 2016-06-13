@@ -14,16 +14,23 @@ module GameBp {
 
             this.addDefaultBody();
 
+            this.inputEnabled = true;
+
+            this.events.onInputDown.add(this.onInputDown, this);
+        }
+
+        onInputDown() {
+            this.player.attack(this);
         }
 
 
         update() {
-        
+
             this.game.physics.arcade.collide(this.player, this, this.player.die, null, this.player);
         }
 
         static handleWeaponCollision(weapon: Phaser.Sprite, enemy: Enemy) {
-        
+            console.log('enemy: outch!');
             enemy.die();
         }
 

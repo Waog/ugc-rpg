@@ -46,6 +46,17 @@ declare module GameBp {
     }
 }
 declare module GameBp {
+    class Enemy extends GameObject {
+        private player;
+        static preload(scene: Phaser.State): void;
+        constructor(game: Phaser.Game, player: Player, x?: number, y?: number);
+        public onInputDown(): void;
+        public update(): void;
+        static handleWeaponCollision(weapon: Phaser.Sprite, enemy: Enemy): void;
+        public die(): void;
+    }
+}
+declare module GameBp {
     class Player extends GameObject {
         private enemyGroup;
         private onWin;
@@ -53,10 +64,11 @@ declare module GameBp {
         private onLose;
         private onLoseContext;
         public weapon: Phaser.Sprite;
-        public weaponAngle: number;
         static preload(scene: Phaser.State): void;
         constructor(game: Phaser.Game, enemyGroup: Phaser.Group, onWin: Function, onWinContext: any, onLose: Function, onLoseContext: any);
         public update(): void;
+        public attack(target: Enemy): void;
+        public onWeaponBack(): void;
         public die(): void;
     }
 }
@@ -82,11 +94,9 @@ declare module GameBp {
 }
 declare module GameBp {
     class GameScene extends Phaser.State {
-        public background: Phaser.Sprite;
         public music: Phaser.Sound;
         public hitSound: Phaser.Sound;
         public player: Player;
-        public enemy: Enemy;
         public enemyGroup: Phaser.Group;
         public preload(): void;
         public create(): void;
@@ -109,14 +119,4 @@ declare module GameBp {
 declare module Utils {
     function createButton(callbackContext: any, game: Phaser.Game, textString: string, callback: Function, x: number, y: number): void;
     function getAudioFileArray(fileNameWithoutExtention: string): string[];
-}
-declare module GameBp {
-    class Enemy extends GameObject {
-        private player;
-        static preload(scene: Phaser.State): void;
-        constructor(game: Phaser.Game, player: Player, x?: number, y?: number);
-        public update(): void;
-        static handleWeaponCollision(weapon: Phaser.Sprite, enemy: Enemy): void;
-        public die(): void;
-    }
 }
